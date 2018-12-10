@@ -1,4 +1,5 @@
 # initializes a chess board on a comand line interface (CLI)
+import os
 
 class Chessboard():
     def create_board(self):
@@ -22,33 +23,49 @@ class Chessboard():
             boardString = boardString + '[' + self.__board[b] + ']'
         return str(boardString)
     
+    def move_piece(self, move, destination):
+        m = int(move)
+        d = int(destination)
+        self.__board[d] = self.__board[m]
+        self.__board[m] = " "
 
 def main():
+    os.system('clear')
     c = Chessboard()
     print(str(c))
-    status = 1  # 1: in game, 0: game over
+    lower = False    # 0: White, lower, 1: Black, UPPER
+    status = 1      # 1: in game, 0: game over
     while (status == 1):
-        x = input()
-        print(x)
-
+        # toggle player
+        lower = not lower
+        if (lower): print("lower:")
+        else: print("UPPER:")
+        
+        print("Piece to move:")
+        move = input()
+        print("Destination:")
+        destination = input()
+        os.system('clear')
+        print(str(c))
+        c.move_piece(move, destination)
 
 main()
 
 '''
 CLI:
 
-(8) [[R][N][B][Q][K][B][N][R]
+(8)  [R][N][B][Q][K][B][N][R]
 (7)  [P][P][P][P][P][P][P][P]
 (6)  [ ][ ][ ][ ][ ][ ][ ][ ]
 (5)  [ ][ ][ ][ ][ ][ ][ ][ ]
 (4)  [ ][ ][ ][ ][ ][ ][ ][ ]
 (3)  [ ][ ][p][ ][ ][ ][ ][ ]
 (2)  [p][p][ ][p][p][p][p][p]
-(1)  [r][n][b][q][k][b][n][r]]
+(1)  [r][n][b][q][k][b][n][r]
 
      (A)(B)(C)(D)(E)(F)(G)(H)
 
-$ lower: c2 c4
+$ lower: c2 c3
 $ UPPER: 
 '''
 
