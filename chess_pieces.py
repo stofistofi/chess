@@ -1,21 +1,31 @@
 class Piece():
   
-  print("hello1")
   def create_piece(self):
-    print("hello2")
     self.__piece = ['name', 'color', 'status']
+
+
+
 
   def __init__(self):
     self.create_piece()
     
   def __str__(self):
+
     return str(self.__piece)
 
-
 def main():
-  print("hello Test")
   p = Piece()
   print(str(p))
+  inpu = ''
+  while inpu != 'quit':
+    print("please enter your move here:")
+    inpu = input()
+    if inpu == 'quit':
+      print("you entered quit, bye bye")
+    else:
+      print("your input was " + inpu)
+
+
 
 main()
 
