@@ -77,7 +77,7 @@ class Chessboard():
             else: print("\nUPPER CASE:")
             print("\nDestination:")
             destination = input()
-            if(self.valid_input(destination)):
+            if(self.valid_input(destination) and not self.valid_team(lower_case, destination)):
                 validDestination = True
             os.system('clear')
             print(str(c))
