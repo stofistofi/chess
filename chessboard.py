@@ -45,49 +45,62 @@ class Chessboard():
         return self.__board
     
     def valid_input(self, input):
-        return (len(input) == 2) and (64 < ord(input[:1].upper()) < 73) and (49 < ord(input[1:2]) < 57)
+        return (len(input) == 2) and (64 < ord(input[:1].upper()) < 73) and (48 < ord(input[1:2]) < 57)
+
+    def valid_team(self, lower_case, input):
+        i = move_alg(input)
+        if (lower_case and self.__board[i].islower()):
+            return True
+        elif (not lower_case and self.__board[i].isupper()): 
+            return True
+        else: 
+            return False
+
+    def valid_move(self, lower_case, c):
+        # boolean 'lower_case' determines if it's lower's turn
+        validMove = False
+        while (validMove is False):
+            if (lower_case): print("\nlower case:")
+            else: print("\nUPPER CASE:")
+            print("\nMove:")
+            move = input()
+            if(self.valid_input(move) and (self.valid_team(lower_case, move))):
+                validMove = True
+            os.system('clear')
+            print(str(c))
+        return move
+    
+    def valid_destination(self, lower_case, c):
+        validDestination = False
+        while (validDestination is False):
+            if (lower_case): print("\nlower case:")
+            else: print("\nUPPER CASE:")
+            print("\nDestination:")
+            destination = input()
+            if(self.valid_input(destination)):
+                validDestination = True
+            os.system('clear')
+            print(str(c))
+        return destination
 
 def main():
     os.system('clear')
     c = Chessboard()
     print(str(c))
-    lower = False            # 0: White, lower, 1: Black, UPPER
+    lower_case = False       # 0: White, lower, 1: Black, UPPER
     status = 1               # 1: in game, 0: game over
-    print("test")
+
     while (status == 1):
         # toggle player
-        
-        lower = not lower
-        if (lower): print("lower:")
-        else: print("UPPER:")
+        lower_case = not lower_case
 
-        # player enters move
-        validInput = False
-        while validInput is False:
-            os.system('clear')
-            print(str(c))
-            if (lower): print("\nlower:")
-            else: print("\nUPPER:")
-            print("\nMove:")
-            move = input()
-            if (c.valid_input(move)):
-                validInput = True
+        # input move and destination and validate
+        move = c.valid_move(lower_case, c)
+        destination = c.valid_destination(lower_case, c)
 
-        # player enters destination
-        validInput = False
-        while validInput is False:
-            os.system('clear')
-            print(str(c))
-            if (lower): print("\nlower:")
-            else: print("\nUPPER:")
-            print("\nDestination:")
-            destination = input()
-            if (c.valid_input(destination)):
-                validInput = True
-
-        os.system('clear')
         # piece moved
         c.move_piece(move_alg(move), move_alg(destination))
+        os.system('clear')
         print(str(c))
 
 main()
