@@ -45,7 +45,7 @@ class Chessboard():
         return self.__board
     
     def valid_input(self, input):
-        return (64 < ord(input[:1].upper()) < 73)
+        return (len(input) == 2) and (64 < ord(input[:1].upper()) < 73) and (49 < ord(input[1:2]) < 57)
 
 def main():
     os.system('clear')
