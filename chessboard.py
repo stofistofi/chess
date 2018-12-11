@@ -1,5 +1,6 @@
 # initializes a chess board on a comand line interface (CLI)
 import os
+from move_alg import move_alg
 
 class Chessboard():
     def create_board(self):
@@ -17,37 +18,43 @@ class Chessboard():
     
     def __str__(self):
         boardString = ""
+        c = 8
         for b in self.__board:
             if (b % 8 == 0):
-                boardString = boardString + '\n'
+                boardString = boardString + '\n' + '(' + str(c) + ')  '
+                c -= 1
             boardString = boardString + '[' + self.__board[b] + ']'
+        boardString = boardString + '\n \n' + '     (A)(B)(C)(D)(E)(F)(G)(H)'
         return str(boardString)
     
     def move_piece(self, move, destination):
-        m = int(move)
-        d = int(destination)
-        self.__board[d] = self.__board[m]
-        self.__board[m] = " "
+        self.__board[destination] = self.__board[move]
+        self.__board[move] = " "
+
+    # reveal_piece is useful for testing
+    def reveal_piece(self, key):
+        return self.__board[key]
 
 def main():
     os.system('clear')
     c = Chessboard()
     print(str(c))
-    lower = False    # 0: White, lower, 1: Black, UPPER
-    status = 1      # 1: in game, 0: game over
+    lower = False            # 0: White, lower, 1: Black, UPPER
+    status = 1               # 1: in game, 0: game over
+
     while (status == 1):
         # toggle player
         lower = not lower
         if (lower): print("lower:")
         else: print("UPPER:")
-        
-        print("Piece to move:")
+
+        print("Move:")
         move = input()
         print("Destination:")
         destination = input()
         os.system('clear')
+        c.move_piece(move_alg(move), move_alg(destination))
         print(str(c))
-        c.move_piece(move, destination)
 
 main()
 
@@ -66,7 +73,19 @@ CLI:
      (A)(B)(C)(D)(E)(F)(G)(H)
 
 $ lower: c2 c3
-$ UPPER: 
+
+(1)  [r][n][b][q][k][b][n][r]
+(2)  [p][p][ ][p][p][p][p][p]
+(3)  [ ][ ][p][ ][ ][ ][ ][ ]
+(4)  [ ][ ][ ][ ][ ][ ][ ][ ]
+(5)  [ ][ ][ ][ ][ ][ ][ ][ ]
+(6)  [ ][ ][ ][ ][ ][ ][ ][ ]
+(7)  [P][P][P][P][P][P][P][P]
+(8)  [R][N][B][Q][K][B][N][R]
+
+     (H)(G)(F)(E)(D)(C)(B)(A)
+
+$ UPPER:
 '''
 
 '''
