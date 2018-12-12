@@ -1,7 +1,7 @@
 # initializes a chess board on a comand line interface (CLI)
 import os
 from move_alg import move_alg
-from chess_pieces import validator
+
 class Chessboard():
     def create_board(self):
         # the chess board is a dictionary, the keys are incrementing integers from 0 to 63,
@@ -83,51 +83,86 @@ class Chessboard():
             print(str(c))
         return destination
     
-    def rookValidity(self, destination):
-        if self.reveal_piece(destination) == " ":
+    def rookValidity(self, move, destination):
+        # Rooks traveling vertically should always be on square coordinates modulus 8 of original position.
+        diff = abs(move-destination)
+        # Rooks traveling horizontally should always be between most left and most right squares (inclusive) on line.
+        # vertical finds position from leftside, horizon0 and horizon1 determines interval
+        # TODO don't jump over pieces
+        vertical = move % 8
+        horizon0 = move - vertical
+        horizon1 = horizon0 + 7
+        if (horizon0 <= destination <= horizon1):
+            # if piece's moving horizontally, fill a list of the squares it's traversing, order of squares doesn't matter
+            horizontal_move = []
+            low_bound = 0
+            hi_bound = 63
+            if move < destination: 
+                low_bound = move
+                hi_bound = destination
+            else: 
+                low_bound = destination
+                hi_bound = move
+            for s in range(low_bound+1, hi_bound):      # e.g. from 27 to 32 (both exclusive)
+                horizontal_move.append(self.reveal_piece(s))
+            # check 
+            print(horizontal_move)
+            # check pieces on path, OK if one piece at the end
+            for h in range(0, len(horizontal_move)):
+                if horizontal_move[h] != " ":
+                    return False
+            return True
+
+        elif (diff % 8 == 0):
+            vertical_move = []
+            low_bound = 0
+            hi_bound = 0
+            if move < destination: 
+                low_bound = move
+                hi_bound = destination
+            else: 
+                low_bound = destination
+                hi_bound = move
+            # similarly, for vertical movement we create a list of squares to check but we only add every eigth square
+            for s in range(low_bound+1, hi_bound):
+                if abs(move - s) % 8 == 0:
+                    vertical_move.append(self.reveal_piece(s))
+            # check
+            print(vertical_move)
+            # check pieces on path, OK if one piece at the end
+            for v in range(0, len(vertical_move)):
+                if vertical_move[v] != " ":
+                    return False
             return True
         else:
             return False
-
-        '''
-        diff = abs(move-destination)
-        horizontal = 
-        if (diff % 8 == 0) or ()
-        '''
 
     def valid_piece_move(self, lower_case, move, destination, currBoard):
         validPieceMove = False
         while (validPieceMove is False):
             if (self.reveal_piece(move).lower() == 'p'): 
                 validPieceMove = True   # TODO fix, this is temp inorder to test
+
             if (self.reveal_piece(move).lower() == 'r'):
-                if (self.rookValidity(destination)):
+                if (self.rookValidity(move, destination)):
                     validPieceMove = True
                 else:
                     return False
         return True
 
-    def valid_by_rule(self, name, move, destination, c, lower_case):
-        print("validating")
-        return validator(name, c, move, destination, lower_case)
-
 def main():
     ### TODO Spyrja út í 'clear' vs. 'clr'
+    ### TODO Test script
     os.system('clear')
     c = Chessboard()
     print(str(c))
     lower_case = False       # 0: White, lower, 1: Black, UPPER
     status = 1               # 1: in game, 0: game over
 
-    while (status == 1):
+    while (status == 1):    # while game is not won
         # toggle player
         lower_case = not lower_case
-        #kjartan added this
-        move = c.valid_move(lower_case, c)
-        destination = c.valid_destination(lower_case, c)
-        m = move_alg(move)
-        d = move_alg(destination)
-        ###
+
         while(True):    # while the input is correct
             # input move and destination and validate
             # output is the int of square in board (e.g. 0 for 'A1')
@@ -135,9 +170,9 @@ def main():
             destination = move_alg(c.valid_destination(lower_case, c))
             # piece moved if valid
             piece = c.valid_piece_move(lower_case, move, destination, c.current_board())
-            if (piece) and c.valid_by_rule(c.reveal_piece(m), m, d, c, lower_case):
+            if (piece):
                 c.move_piece(move, destination)
-                os.system('clear')
+                #os.system('clear')
                 print(str(c))
                 break
             else:
