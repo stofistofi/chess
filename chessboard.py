@@ -47,7 +47,7 @@ class Chessboard():
     def valid_input(self, input):
         return (len(input) == 2) and (64 < ord(input[:1].upper()) < 73) and (48 < ord(input[1:2]) < 57)
 
-    def valid_team(self, lower_case, input):
+    def same_team(self, lower_case, input):
         i = move_alg(input)
         if (lower_case and self.__board[i].islower()):
             return True
@@ -64,7 +64,7 @@ class Chessboard():
             else: print("\nUPPER CASE:")
             print("\nMove:")
             move = input()
-            if(self.valid_input(move) and (self.valid_team(lower_case, move))):
+            if(self.valid_input(move) and (self.same_team(lower_case, move))):
                 validMove = True
             os.system('clear')
             print(str(c))
@@ -77,13 +77,39 @@ class Chessboard():
             else: print("\nUPPER CASE:")
             print("\nDestination:")
             destination = input()
-            if(self.valid_input(destination) and not self.valid_team(lower_case, destination)):
+            if(self.valid_input(destination) and not self.same_team(lower_case, destination)):
                 validDestination = True
             os.system('clear')
             print(str(c))
         return destination
+    
+    def rookValidity(self, destination):
+        if self.reveal_piece(destination) == " ":
+            return True
+        else:
+            return False
+
+        '''
+        diff = abs(move-destination)
+        horizontal = 
+        if (diff % 8 == 0) or ()
+        '''
+
+    def valid_piece_move(self, lower_case, move, destination, currBoard):
+        validPieceMove = False
+        while (validPieceMove is False):
+            if (self.reveal_piece(move).lower() == 'p'): 
+                validPieceMove = True   # TODO fix, this is temp inorder to test
+
+            if (self.reveal_piece(move).lower() == 'r'):
+                if (self.rookValidity(destination)):
+                    validPieceMove = True
+                else:
+                    return False
+        return True
 
 def main():
+    ### TODO Spyrja út í 'clear' vs. 'clr'
     os.system('clear')
     c = Chessboard()
     print(str(c))
@@ -94,14 +120,20 @@ def main():
         # toggle player
         lower_case = not lower_case
 
-        # input move and destination and validate
-        move = c.valid_move(lower_case, c)
-        destination = c.valid_destination(lower_case, c)
-
-        # piece moved
-        c.move_piece(move_alg(move), move_alg(destination))
-        os.system('clear')
-        print(str(c))
+        while(True):    # while the input is correct
+            # input move and destination and validate
+            # output is the int of square in board (e.g. 0 for 'A1')
+            move = move_alg(c.valid_move(lower_case, c))
+            destination = move_alg(c.valid_destination(lower_case, c))
+            # piece moved if valid
+            piece = c.valid_piece_move(lower_case, move, destination, c.current_board())
+            if (piece):
+                c.move_piece(move, destination)
+                os.system('clear')
+                print(str(c))
+                break
+            else:
+                print("Not a valid move.")
 
 main()
 
