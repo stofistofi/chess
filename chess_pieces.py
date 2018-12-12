@@ -20,7 +20,7 @@ def pawnValidity(name, fromm, destination, board):
                     print("solid 1 forward move")
                     return True
             if fromm - 16 == destination:
-                if ' ' == board[destination] and ' ' == board.reveal_piece(destination + 8):
+                if ' ' == board[destination] and ' ' == board[destination+ 8]:
                     print("Solid 2 forward move")
                     return True
             else: return False
