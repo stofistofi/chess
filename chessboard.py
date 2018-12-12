@@ -50,10 +50,9 @@ class Chessboard():
         return (len(input) == 2) and (64 < ord(input[:1].upper()) < 73) and (48 < ord(input[1:2]) < 57)
 
     def same_team(self, lower_case, input):
-        i = move_alg(input)
-        if (lower_case and self.__board[i].islower()):
+        if (lower_case and self.__board[input].islower()):
             return True
-        elif (not lower_case and self.__board[i].isupper()): 
+        elif (not lower_case and self.__board[input].isupper()): 
             return True
         else: 
             return False
@@ -66,7 +65,8 @@ class Chessboard():
             else: print("\nUPPER CASE:")
             print("\nMove:")
             move = input()
-            if(self.valid_input(move) and (self.same_team(lower_case, move))):
+            m = move_alg(move)
+            if(self.valid_input(move) and (self.same_team(lower_case, m))):
                 validMove = True
             os.system('clear')
             print(str(c))
@@ -79,7 +79,8 @@ class Chessboard():
             else: print("\nUPPER CASE:")
             print("\nDestination:")
             destination = input()
-            if(self.valid_input(destination) and not self.same_team(lower_case, destination)):
+            d = move_alg(destination)
+            if(self.valid_input(destination) and not self.same_team(lower_case, d)):
                 validDestination = True
             os.system('clear')
             print(str(c))
@@ -239,20 +240,53 @@ class Chessboard():
         
         return True
 
-    def check(self, lower_case, move):
-        # after moving a piece we check if the piece has checked the opponent's king
-        # we do this by reusing valid_piece_move but for the piece's new location and the location of the other's king
-        # let's find the king
+    def find_king(self, lower_case):
         if lower_case: find = 'K'
         else: find = 'k'
         for s in range(0, 64):
             if (self.reveal_piece(s) == find):
-                key = s
+                return s
+
+    def find_kingEscapes(self, lower_case):
+        king = self.find_king(lower_case)
+        kingsEscapes = []
+        if self.valid_piece_move(lower_case, king, king+1, self.current_board()):
+            kingsEscapes.append(king+1)
+        elif self.valid_piece_move(lower_case, king, king-1, self.current_board()):
+            kingsEscapes.append(king-1)
+        for k in range(7,10):
+            if self.valid_piece_move(lower_case, king, king+k, self.current_board()):
+                kingsEscapes.append(king+k)
+        for k in range(-9,-6):
+            if self.valid_piece_move(lower_case, king, king+k, self.current_board()):
+                kingsEscapes.append(king+k)
+        return kingsEscapes
+
+    def check(self, lower_case, move):
+        # after moving a piece we check if the piece has checked the opponent's king
+        # we do this by reusing valid_piece_move but for the piece's new location and the location of the other's king
+        # let's find the king
+        king = self.find_king(lower_case)
         # let's see if moving from the new location to the king would be a legal move, if so, it's check
-        if (self.valid_piece_move(lower_case, move, key, self.current_board())):
+        if (self.valid_piece_move(lower_case, move, king, self.current_board())):
             return True
         else:
             return False
+
+    def checkmate(self, lower_case):
+        king = self.find_king(lower_case)
+        kingsEscapes = self.find_kingEscapes(lower_case)
+        if len(kingsEscapes) == 0:
+            return True
+        for k in kingsEscapes:
+            for p in self.current_board():
+                if self.valid_piece_move(lower_case, p, king, self.current_board()):
+                    kingsEscapes = kingsEscapes.remove(k)
+        if len(kingsEscapes) == 0:
+            return True
+        else:
+            return False
+
 
 def main():
     ### TODO Spyrja út í 'clear' vs. 'clr'
@@ -267,7 +301,6 @@ def main():
     while (status == 1):    # while game is not won
         # toggle player
         lower_case = not lower_case
-
         while(True):    # while the input is correct
             # input move and destination and validate
             # output is the int of square in board (e.g. 0 for 'A1')
@@ -281,8 +314,12 @@ def main():
                 print(str(c))
                 if(c.check(lower_case, destination)):
                     print("CHECK!")
+                    if(c.checkmate(lower_case)):
+                        status = 0
+                        break
                 break
             else:
                 print("Not a valid move.")
+    print("CCCCCCHEEEEEECCCKKKMAAAAAATEEEEEE!!!!!")
 
 main()
