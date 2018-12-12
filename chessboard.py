@@ -4,6 +4,7 @@ from move_alg import move_alg
 from chess_pieces import validator
 
 class Chessboard():
+
     def create_board(self):
         # the chess board is a dictionary, the keys are incrementing integers from 0 to 63,
         # the values are the chess players. This makes calculations easier
@@ -235,11 +236,28 @@ class Chessboard():
                     validPieceMove = True
                 else:
                     return False
+        
         return True
+
+    def check(self, lower_case, move):
+        # after moving a piece we check if the piece has checked the opponent's king
+        # we do this by reusing valid_piece_move but for the piece's new location and the location of the other's king
+        # let's find the king
+        if lower_case: find = 'K'
+        else: find = 'k'
+        for s in range(0, 64):
+            if (self.reveal_piece(s) == find):
+                key = s
+        # let's see if moving from the new location to the king would be a legal move, if so, it's check
+        if (self.valid_piece_move(lower_case, move, key, self.current_board())):
+            return True
+        else:
+            return False
 
 def main():
     ### TODO Spyrja út í 'clear' vs. 'clr'
     ### TODO Test script
+    ### TODO Must uncheck
     os.system('clear')
     c = Chessboard()
     print(str(c))
@@ -261,6 +279,8 @@ def main():
                 c.move_piece(move, destination)
                 os.system('clear')
                 print(str(c))
+                if(c.check(lower_case, destination)):
+                    print("CHECK!")
                 break
             else:
                 print("Not a valid move.")
