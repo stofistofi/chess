@@ -111,13 +111,14 @@ class Chessboard():
             # check pieces on path, OK if one piece at the end
             for h in range(0, len(horizontal_move)):
                 if horizontal_move[h] != " ":
+                    print(horizontal_move[h])
                     return False
             return True
 
         elif (diff % 8 == 0):
             vertical_move = []
             low_bound = 0
-            hi_bound = 0
+            hi_bound = 63
             if move < destination: 
                 low_bound = move
                 hi_bound = destination
@@ -138,6 +139,70 @@ class Chessboard():
         else:
             return False
 
+    def bishopValidity(self, move, destination):
+        diff = abs(move-destination)
+        # some cool discrete mathematics, ala Halldór Halldórsson, reveals that diagonal movements 
+        # should always either have a length of 7s (/) or 9s (\)
+        if (diff % 7 == 0):
+            # check squares in between
+            diagonal_move = []
+            low_bound = 0
+            hi_bound = 63
+            if move < destination: 
+                low_bound = move
+                hi_bound = destination
+            else: 
+                low_bound = destination
+                hi_bound = move
+            # For diagonal movement we create a list of squares to check but we only add every seventh square
+            for s in range(low_bound+1, hi_bound):
+                if abs(move - s) % 7 == 0:
+                    diagonal_move.append(self.reveal_piece(s))
+            # check
+            print(diagonal_move)
+            # check pieces on path, OK if one piece at the end
+            for d in range(0, len(diagonal_move)):
+                if diagonal_move[d] != " ":
+                    return False
+            return True
+        elif (diff % 9 == 0):
+            # check squares in between
+            diagonal_move = []
+            low_bound = 0
+            hi_bound = 63
+            if move < destination: 
+                low_bound = move
+                hi_bound = destination
+            else: 
+                low_bound = destination
+                hi_bound = move
+            # For diagonal movement we create a list of squares to check but we only add every seventh square
+            for s in range(low_bound+1, hi_bound):
+                if abs(move - s) % 9 == 0:
+                    diagonal_move.append(self.reveal_piece(s))
+            # check
+            print(diagonal_move)
+            # check pieces on path, OK if one piece at the end
+            for d in range(0, len(diagonal_move)):
+                if diagonal_move[d] != " ":
+                    return False
+            return True
+        else:
+            return False
+
+    def queenValidity(self, move, destination):
+        if self.rookValidity(move, destination) or self.bishopValidity(move, destination):
+            return True
+        else:
+            return False
+
+    def kingValidity(self, move, destination):
+        diff = abs(move-destination)
+        if diff == 1 or 7 <= diff <= 9:
+            return True
+        else:
+            return False
+
     def valid_piece_move(self, lower_case, move, destination, currBoard):
         validPieceMove = False
         while (validPieceMove is False):
@@ -149,6 +214,24 @@ class Chessboard():
 
             if (self.reveal_piece(move).lower() == 'r'):
                 if (self.rookValidity(move, destination)):
+                    validPieceMove = True
+                else:
+                    return False
+
+            if (self.reveal_piece(move).lower() == 'b'):
+                if (self.bishopValidity(move, destination)):
+                    validPieceMove = True
+                else:
+                    return False
+
+            if (self.reveal_piece(move).lower() == 'q'):
+                if (self.queenValidity(move, destination)):
+                    validPieceMove = True
+                else:
+                    return False
+
+            if (self.reveal_piece(move).lower() == 'k'):
+                if (self.kingValidity(move, destination)):
                     validPieceMove = True
                 else:
                     return False
@@ -176,45 +259,10 @@ def main():
             piece = c.valid_piece_move(lower_case, move, destination, c.current_board())
             if (piece):
                 c.move_piece(move, destination)
-                #os.system('clear')
+                os.system('clear')
                 print(str(c))
                 break
             else:
                 print("Not a valid move.")
 
 main()
-
-'''
-CLI:
-
-(8)  [R][N][B][Q][K][B][N][R]
-(7)  [P][P][P][P][P][P][P][P]
-(6)  [ ][ ][ ][ ][ ][ ][ ][ ]
-(5)  [ ][ ][ ][ ][ ][ ][ ][ ]
-(4)  [ ][ ][ ][ ][ ][ ][ ][ ]
-(3)  [ ][ ][p][ ][ ][ ][ ][ ]
-(2)  [p][p][ ][p][p][p][p][p]
-(1)  [r][n][b][q][k][b][n][r]
-
-     (A)(B)(C)(D)(E)(F)(G)(H)
-
-$ lower: c2 c3
-
-(1)  [r][n][b][q][k][b][n][r]
-(2)  [p][p][ ][p][p][p][p][p]
-(3)  [ ][ ][p][ ][ ][ ][ ][ ]
-(4)  [ ][ ][ ][ ][ ][ ][ ][ ]
-(5)  [ ][ ][ ][ ][ ][ ][ ][ ]
-(6)  [ ][ ][ ][ ][ ][ ][ ][ ]
-(7)  [P][P][P][P][P][P][P][P]
-(8)  [R][N][B][Q][K][B][N][R]
-
-     (H)(G)(F)(E)(D)(C)(B)(A)
-
-$ UPPER:
-'''
-
-'''
-move(i, b):
-    c2: 'p'
-'''
