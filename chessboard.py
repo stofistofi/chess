@@ -1,7 +1,7 @@
 # initializes a chess board on a comand line interface (CLI)
 import os
 from move_alg import move_alg
-
+from chess_pieces import validator
 class Chessboard():
     def create_board(self):
         # the chess board is a dictionary, the keys are incrementing integers from 0 to 63,
@@ -100,13 +100,16 @@ class Chessboard():
         while (validPieceMove is False):
             if (self.reveal_piece(move).lower() == 'p'): 
                 validPieceMove = True   # TODO fix, this is temp inorder to test
-
             if (self.reveal_piece(move).lower() == 'r'):
                 if (self.rookValidity(destination)):
                     validPieceMove = True
                 else:
                     return False
         return True
+
+    def valid_by_rule(self, name, move, destination, c, lower_case):
+        print("validating")
+        return validator(name, c, move, destination, lower_case)
 
 def main():
     ### TODO Spyrja út í 'clear' vs. 'clr'
@@ -119,7 +122,12 @@ def main():
     while (status == 1):
         # toggle player
         lower_case = not lower_case
-
+        #kjartan added this
+        move = c.valid_move(lower_case, c)
+        destination = c.valid_destination(lower_case, c)
+        m = move_alg(move)
+        d = move_alg(destination)
+        ###
         while(True):    # while the input is correct
             # input move and destination and validate
             # output is the int of square in board (e.g. 0 for 'A1')
@@ -127,7 +135,7 @@ def main():
             destination = move_alg(c.valid_destination(lower_case, c))
             # piece moved if valid
             piece = c.valid_piece_move(lower_case, move, destination, c.current_board())
-            if (piece):
+            if (piece) and c.valid_by_rule(c.reveal_piece(m), m, d, c, lower_case):
                 c.move_piece(move, destination)
                 os.system('clear')
                 print(str(c))
