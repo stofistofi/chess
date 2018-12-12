@@ -1,6 +1,7 @@
 # initializes a chess board on a comand line interface (CLI)
 import os
 from move_alg import move_alg
+from chess_pieces import validator
 
 class Chessboard():
     def create_board(self):
@@ -141,7 +142,10 @@ class Chessboard():
         validPieceMove = False
         while (validPieceMove is False):
             if (self.reveal_piece(move).lower() == 'p'): 
-                validPieceMove = True   # TODO fix, this is temp inorder to test
+                if validator(self.reveal_piece(move), move, destination, self.current_board(), lower_case):
+                    validPieceMove = True
+                else:
+                    return False
 
             if (self.reveal_piece(move).lower() == 'r'):
                 if (self.rookValidity(move, destination)):
