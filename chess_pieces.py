@@ -6,10 +6,6 @@ def pawnValidity(name, fromm, destination, board):
     initialStateLower = [48, 49, 50, 51, 52, 53, 54, 55]
     initialStateHigher = [8, 9, 10, 11, 12, 13, 14, 15]
 
-    #last row for the pieces
-    lastForLower = [0,1,2,3,4,5,6,7]
-    lastForHigher = [56,57,58,59,60,61,62,63]
-
     #check if its lower
     if name.islower():
         #print('its so small!!')
@@ -67,11 +63,128 @@ def pawnValidity(name, fromm, destination, board):
                 print("You just Killed" + board[destination])
                 return True
         else:
-            print("need to work on this edge caseBIG")
+            print("need to work on this edge case BIG")
             return False
+
+
+def knightValidity(name, fromm, destination, board):
+    safeZone = [18,19,20,21,26,27,28,29,34,25,26,27,42,43,44,45]
+    outBound1 = [58,59,60,61]
+    outBound1plus2 = [57,58,59,60,61,62]
+    outbound2 = [40,32,24,16]
+    outbound2plus2 = [48,40,32,24,16,8]
+    outbound3 = [2,3,4,5]
+    outbound3plus2 = [1,2,3,4,5,6]
+    outbound4 = [23,31,39,47]
+    outbound4plus2 = [15,23,31,39,47,55]
+    redzone1 = [10,11,12,13]
+    redzone1v1 = [9,10,11,12,13,14]
+    redzone2 = [50,51,52,53]
+    redzone2v2 = [49,50,51,52,53,54]
+    redzone3 = [17,25,33,41,49]
+    redzone4 = [22,30,38,46]
+
+    #shortcuts
+    d = destination
+    forl = fromm - 17
+    forr = fromm - 15
+    lef = fromm - 10
+    led = fromm + 6
+    dol = fromm + 15
+    dor = fromm + 17
+    rif = fromm - 6
+    rid = fromm + 10
+
+    if name.islower() or name.isupper():
+        #if the move is from the safe zone
+        if fromm in safeZone and (lef == d or rif == d or rid == d or led == d or forl == d or forr == d or dor == d or dol == d):
+            return True
+        if fromm in outBound1plus2:
+            if fromm - 17 == d or forr == d:
+                return True
+            if fromm in outBound1:
+                if lef == d or rif == d:
+                    return True
+        #corner cases
+        if fromm == 56 and (forr == d or rif == d):
+            return True
+        if fromm == 63 and (forl == d or lef == d):
+            return True
+        if fromm == 0 and (dor == d or rid):
+            return True
+        if fromm == 7 and (dol == d or led == d):
+            return True
+        if fromm == 48 and (forr == d):
+            return True
+        if fromm == 57 and (rif == d):
+            return True
+        if fromm == 62 and (forr == d):
+            return True
+        if fromm == 55 and (forl == d):
+            return True
+        if fromm == 8 and (dor == d):
+            return True
+        if fromm == 1 and (rid == d):
+            return True
+        if fromm == 6 and (led == d):
+            return True
         
+        #redzone corner cases
+        if fromm == 9 and (rif == d or rid == d):
+            return True
+        if fromm == 14 and (lef == d or led == d):
+            return True
+        if fromm == 49 and (rif == d or rid == d):
+            return True
+        if fromm == 54 and (lef == d or led == d):
+            return True
+        
+        #edge of board cases
+        if fromm in outbound2plus2:
+            if rid == d or rif == d:
+                return True
+            if fromm in outbound2:
+                if dor == d or forr == d:
+                    return True
+        if fromm in outbound3plus2:
+            if dor == d or dol == d:
+                return True
+            if fromm in outbound3:
+                if led == d or rid == d:
+                    return True
+        if fromm in outbound4plus2:
+            if lef == d or led == d:
+                return True
+            if fromm in outbound4:
+                if forl == d or dol == d:
+                    return True
+            
+            #red zone
+            if fromm in redzone1v1:
+                if dol == d or dor == d:
+                    return True
+                if fromm in redzone1:
+                    if rid == d or led == d or lef == d or rif == d:
+                        return True
+            
+            if fromm in redzone2v2:
+                if forl == d or forr == d:
+                    return True
+                if fromm in redzone2:
+                    if lef == d or led == d or rif == d or rid == d:
+                        return True
+            if fromm in redzone3:
+                if forl == d or forr == d or dol == d or dor == d or rif == d or rid == d:
+                    return True
+            if fromm in redzone4:
+                if forl == d or forr == d or lef == d or led == d or dol == d or dor == d:
+                    return True
+        else:
+            print('caught a false move!')
+            return False
 
-
+            
+#bridge for knight
 
 ###########################################################
 def validator(name, fromm, destination, boardStatus, turn):
@@ -79,6 +192,9 @@ def validator(name, fromm, destination, boardStatus, turn):
         print("pawn being validated")
         if pawnValidity(name, fromm, destination, boardStatus):
             print("done")
+            return True
+    if name == 'n' or name =='N':
+        if knightValidity(name, fromm, destination, boardStatus):
             return True
 
 def main():
