@@ -16,6 +16,7 @@ Pawns, rooks, bishops, queens and kings rules complied.
 (K)night begun.
 Check.
 Checkmate.
+MVP.
 
 Thursday:
 Refractoring.
