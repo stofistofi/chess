@@ -1,70 +1,62 @@
 
-#Basic forward passive pawn moves
-def pawnValidity(name, fromm, destination, board):
+#To Do List
+# can kill forward???
+#lower case pawns
+def lowerPawnValidity(name, fromm, destination, board):
 
     #if the pawn is in the initial state
     initialStateLower = [48, 49, 50, 51, 52, 53, 54, 55]
-    initialStateHigher = [8, 9, 10, 11, 12, 13, 14, 15]
 
-    #check if its lower
-    if name.islower():
-        #print('its so small!!')
         #moving on top of pieces from initial state
-        if fromm in initialStateLower:
-            if fromm - 8 == destination:
-                if ' ' == board[destination]:
-                    print("solid 1 forward move")
-                    return True
-            if fromm - 16 == destination:
-                if ' ' == board[destination] and ' ' == board[destination+ 8]:
-                    print("Solid 2 forward move")
-                    return True
-            else: return False
-        
-        #moving on top of pieces not initial state
-        if fromm not in initialStateLower:
-            if fromm - 8 == destination:
-                if ' ' != board[destination]:
-                    print("solid 1 forward move")
-                    return True
-        
-        #Killing a piece (Death by Pawn)
-        if fromm - 7 == destination or fromm - 9 == destination:
-            if ' ' != board[destination]:
-                print("You just Killed")
+    if fromm in initialStateLower:
+        if fromm - 8 == destination:
+            if ' ' == board[destination]:
                 return True
-        else:
-            print("need to work on this edge case small")
-            return False
-    ###################################################################################################################upper starts here
-    elif name.isupper():
-        #moving on top of pieces from initial state
-        if fromm in initialStateHigher:
-            if fromm + 8 == destination:
-                if ' ' == board[destination]:
-                    print("solid 1 forward move")
-                    return True
-            if fromm + 16 == destination:
-                if ' ' == board[destination] and ' ' == board[destination - 8]:
-                    print("Solid 2 forward move")
-                    return True
-            else: return False
-        
-        #moving on top of pieces not initial state
-        if fromm not in initialStateHigher:
-            if fromm + 8 == destination:
-                if ' ' != board[destination]:
-                    print("solid 1 forward move")
-                    return True
-        
-        #Killing a piece (Death by Pawn)
-        if fromm + 7 == destination or fromm + 9 == destination:
-            if ' ' != board[destination]:
-                print("You just Killed" + board[destination])
+        if fromm - 16 == destination:
+            if ' ' == board[destination] and ' ' == board[destination + 8]:
                 return True
-        else:
-            print("need to work on this edge case BIG")
-            return False
+        else: return False
+    
+    #moving on top of pieces not initial state
+    if fromm not in initialStateLower:
+        if fromm - 8 == destination:
+            if ' ' == board[destination]:
+                return True
+    
+    #Killing a piece (Death by Pawn)
+    if fromm - 7 == destination or fromm - 9 == destination:
+        if ' ' != board[destination]:
+            return True
+    else:
+        return False
+
+
+#upper case pawns
+def upperPawnValidity(name, fromm, destination, board):
+    initialStateHigher = [8, 9, 10, 11, 12, 13, 14, 15]
+    
+    #moving on top of pieces from initial state
+    if fromm in initialStateHigher:
+        if fromm + 8 == destination:
+            if ' ' == board[destination]:
+                return True
+        if fromm + 16 == destination:
+            if ' ' == board[destination] and ' ' == board[destination - 8]:
+                return True
+        else: return False
+    
+    #moving on top of pieces not initial state
+    if fromm not in initialStateHigher:
+        if fromm + 8 == destination:
+            if ' ' == board[destination]:
+                return True
+    
+    #Killing a piece (Death by Pawn)
+    if fromm + 7 == destination or fromm + 9 == destination:
+        if ' ' != board[destination]:
+            return True
+    else:
+        return False
 
 
 def knightValidity(name, fromm, destination, board):
@@ -95,104 +87,109 @@ def knightValidity(name, fromm, destination, board):
     rif = fromm - 6
     rid = fromm + 10
 
-    if name.islower() or name.isupper():
-        #if the move is from the safe zone
-        if fromm in safeZone and (lef == d or rif == d or rid == d or led == d or forl == d or forr == d or dor == d or dol == d):
+
+    #if the move is from the safe zone
+    if fromm in safeZone and (lef == d or rif == d or rid == d or led == d or forl == d or forr == d or dor == d or dol == d):
+        return True
+    if fromm in outBound1plus2:
+        if forl == d or forr == d:
             return True
-        if fromm in outBound1plus2:
-            if fromm - 17 == d or forr == d:
+        if fromm in outBound1:
+            if lef == d or rif == d:
                 return True
-            if fromm in outBound1:
-                if lef == d or rif == d:
-                    return True
-        #corner cases
-        if fromm == 56 and (forr == d or rif == d):
+    #corner cases
+    if fromm == 56 and (forr == d or rif == d):
+        return True
+    if fromm == 63 and (forl == d or lef == d):
+        return True
+    if fromm == 0 and (dor == d or rid == d):
+        return True
+    if fromm == 7 and (dol == d or led == d):
+        return True
+    if fromm == 48 and (forr == d):
+        return True
+    if fromm == 57 and (rif == d):
+        return True
+    if fromm == 62 and (forr == d):
+        return True
+    if fromm == 55 and (forl == d):
+        return True
+    if fromm == 8 and (dor == d):
+        return True
+    if fromm == 1 and (rid == d):
+        return True
+    if fromm == 6 and (led == d):
+        return True
+    
+    #redzone corner cases
+    if fromm == 9 and (rif == d or rid == d):
+        return True
+    if fromm == 14 and (lef == d or led == d):
+        return True
+    if fromm == 49 and (rif == d or rid == d):
+        return True
+    if fromm == 54 and (lef == d or led == d):
+        return True
+    
+    #edge of board cases
+    if fromm in outbound2plus2:
+        if rid == d or rif == d:
             return True
-        if fromm == 63 and (forl == d or lef == d):
+        if fromm in outbound2:
+            if dor == d or forr == d:
+                return True
+    if fromm in outbound3plus2:
+        if dor == d or dol == d:
             return True
-        if fromm == 0 and (dor == d or rid):
+        if fromm in outbound3:
+            if led == d or rid == d:
+                return True
+    if fromm in outbound4plus2:
+        if lef == d or led == d:
             return True
-        if fromm == 7 and (dol == d or led == d):
-            return True
-        if fromm == 48 and (forr == d):
-            return True
-        if fromm == 57 and (rif == d):
-            return True
-        if fromm == 62 and (forr == d):
-            return True
-        if fromm == 55 and (forl == d):
-            return True
-        if fromm == 8 and (dor == d):
-            return True
-        if fromm == 1 and (rid == d):
-            return True
-        if fromm == 6 and (led == d):
-            return True
+        if fromm in outbound4:
+            if forl == d or dol == d:
+                return True
         
-        #redzone corner cases
-        if fromm == 9 and (rif == d or rid == d):
-            return True
-        if fromm == 14 and (lef == d or led == d):
-            return True
-        if fromm == 49 and (rif == d or rid == d):
-            return True
-        if fromm == 54 and (lef == d or led == d):
-            return True
+        #red zone
+        if fromm in redzone1v1:
+            if dol == d or dor == d:
+                return True
+            if fromm in redzone1:
+                if rid == d or led == d or lef == d or rif == d:
+                    return True
         
-        #edge of board cases
-        if fromm in outbound2plus2:
-            if rid == d or rif == d:
+        if fromm in redzone2v2:
+            if forl == d or forr == d:
                 return True
-            if fromm in outbound2:
-                if dor == d or forr == d:
+            if fromm in redzone2:
+                if lef == d or led == d or rif == d or rid == d:
                     return True
-        if fromm in outbound3plus2:
-            if dor == d or dol == d:
+
+        if fromm in redzone3:
+            if forl == d or forr == d or dol == d or dor == d or rif == d or rid == d:
                 return True
-            if fromm in outbound3:
-                if led == d or rid == d:
-                    return True
-        if fromm in outbound4plus2:
-            if lef == d or led == d:
+
+        if fromm in redzone4:
+            if forl == d or forr == d or lef == d or led == d or dol == d or dor == d:
                 return True
-            if fromm in outbound4:
-                if forl == d or dol == d:
-                    return True
-            
-            #red zone
-            if fromm in redzone1v1:
-                if dol == d or dor == d:
-                    return True
-                if fromm in redzone1:
-                    if rid == d or led == d or lef == d or rif == d:
-                        return True
-            
-            if fromm in redzone2v2:
-                if forl == d or forr == d:
-                    return True
-                if fromm in redzone2:
-                    if lef == d or led == d or rif == d or rid == d:
-                        return True
-            if fromm in redzone3:
-                if forl == d or forr == d or dol == d or dor == d or rif == d or rid == d:
-                    return True
-            if fromm in redzone4:
-                if forl == d or forr == d or lef == d or led == d or dol == d or dor == d:
-                    return True
-        else:
-            print('caught a false move!')
-            return False
+    else:
+        return False
 
             
 #bridge for knight
 
 ###########################################################
 def validator(name, fromm, destination, boardStatus, turn):
-    if name == 'p' or name =='P':
+    if name == 'p':
         print("pawn being validated")
-        if pawnValidity(name, fromm, destination, boardStatus):
-            print("done")
+        if lowerPawnValidity(name, fromm, destination, boardStatus):
             return True
+
+    if name =='P':
+        if upperPawnValidity(name, fromm, destination, boardStatus):
+            return True
+            
     if name == 'n' or name =='N':
         if knightValidity(name, fromm, destination, boardStatus):
             return True
@@ -214,121 +211,3 @@ def main():
 #King: minimum 1 and maximum 1. unless castling (castling is when the rook and the King swap places.
 # This can only be done if no piece is checking the King or if the move could result in a check)
 
-##Overall check if any pieces are in the way. so A general rule would be to check the availability on the chessboard, then 
-
-# 8 - 15 and 48 - 55 initial start for pawns
-                    #check if the pawn is on the left edge
-#KILLING by PAWNS  fromm % 8 == 0 and destination == fromm - 7:
-
-#destination in board and ' ' == board[destination] 
-
-    # if name == 'r' or name =='R':
-    #   if destination:
-    #     return True
-    # if name == 'n' or name =='N':
-    #   if destination:
-    #     return True
-    # if name == 'b' or name =='B':
-    #   if destination:
-    #     return True
-    # if name == 'q' or name =='Q':
-    #   if destination:
-    #     return True
-    # if name == 'k' or name =='K':
-    #   if destination:
-    #     return True
-
-
-
-
-     # check for normal moves forward by 1 and fromm + 8 == destination
-    #     if fromm in lastForHigher and fromm - 8 == destination:
-    #         print("Invalid move 1forward")
-    #         return False
-        
-    #     # if the pawns are in the last row of their opponennt side
-    #     if fromm  in lastForHigher and fromm + 8 == destination:
-    #         print("Invalid move 1forward")
-    #         return False
-
-    #     #check if the pawn is on the edge
-    #     if fromm % 8 == 0 and destination == fromm + 7 or ((fromm + 1) % 8 == 0 and destination == fromm - 7):
-    #         print('illegal Kill move!')
-    #         return False
-        
-    #     #if the player wants to go forward by 1 or 2 in the initial stage #edit: also cant move over a piece
-    #     if fromm in initialStateHigher and (fromm + 8 == destination or fromm + 16 == destination):
-    #         if fromm + 16 == destination and ' ' !=  board.reveal_piece(destination + 8):
-    #             print("cant move over pieces")
-            
-    #     # check if moving more than one
-    #     if fromm in initialStateHigher and fromm - destination != fromm -8:
-    #         print("has to move forward by one!")
-    #         return False
-        
-    #     #check if pawn is moving on top of a piece
-    #     if ' ' == board.reveal_piece(destination):
-    #         print("valid destination")
-
-    #     if ' ' !=  board.reveal_piece(destination) and  board.reveal_piece(destination).islower() or  board.reveal_piece(destination) == 'k':
-    #         print("valid kill move ")
-    #         return True
-        
-    #     #check if the pawn is on the edge
-    #     if fromm % 8 == 0 and destination == fromm +7 or ((fromm + 1) % 8 == 0 and destination == fromm + 9):
-    #         print('illegal Kill move!')
-    #         return False
-    #     elif ' ' != board.reveal_piece(destination):
-    #         print('illigal move')
-    #         return False
-    # print("none of the if statements were hit so return true")
-    # return True'''
-#########################################################################################################################################################
-
-#########################################################################################################################################################
-
-    # # check for normal moves forward by 1 took out-> and ' ' == board.reveal_piece(destination)
-    #     if fromm not in lastForLower and fromm not in initialStateLower and fromm - 8 != destination:
-    #         print("Invalid move only 1 forward")
-    #         return False
-        
-    #     # if the pawns are in the last row of their opponennt side
-    #     if fromm in lastForLower and fromm - 8 == destination:
-    #         print("Invalid move 1forward")
-    #         return False
-        
-    #     #check if the pawn is on the edge
-    #     if fromm % 8 == 0 and destination == fromm - 9 or ((fromm + 1) % 8 == 0 and destination == fromm - 7):
-    #         print('illegal Kill move!')
-    #         return False
-        
-    #     #if the player wants to go forward by 1 or 2 in the initial stage #edit: also cant move over a piece
-    #     if fromm in initialStateLower and (fromm - 8 == destination or fromm - 16 == destination):
-    #         if fromm - 16 == destination and ' ' !=  board.reveal_piece(destination - 8):
-    #             print("cant move over pieces")
-            
-    #         # check if moving more than one
-    #         if fromm in initialStateLower and (destination != fromm -8 or destination != fromm -16):
-    #             print("has to move forward by one!")
-    #             return False
-    #         #check if pawn is moving on top of a piece or killing it
-    #         if ' ' == board.reveal_piece(destination):
-    #             print("valid destination")
-    #             return True
-        
-    #     if ' ' !=  board.reveal_piece(destination) and  board.reveal_piece(destination).isupper() and  board.reveal_piece(destination) != 'K':
-    #         print("valid kill move ")
-    #         return True
-    #     ###
-    #     elif  ' ' !=  board.reveal_piece(destination) and  board.reveal_piece(destination).isupper() and  board.reveal_piece(destination) == 'K':
-    #         print("killing the king?")
-        
-    #     else:
-    #         print("thats a new move that I havent caught yet")
-    #         return False
-
-######## if the name is upper
-    # elif name.isupper():
-    #     print('its so Big!!')
-    #     return True
-       
