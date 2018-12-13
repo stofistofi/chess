@@ -1,4 +1,3 @@
-# initializes a chess board on a comand line interface (CLI)
 import os
 from move_alg import move_alg
 from chess_pieces import validator
@@ -56,35 +55,6 @@ class Chessboard():
             return True
         else: 
             return False
-
-    def valid_move(self, lower_case, c):
-        # boolean 'lower_case' determines if it's lower's turn
-        validMove = False
-        while (validMove is False):
-            if (lower_case): print("\nlower case:")
-            else: print("\nUPPER CASE:")
-            print("\nMove:")
-            move = input()
-            m = move_alg(move)
-            if(self.valid_input(move) and (self.same_team(lower_case, m))):
-                validMove = True
-            os.system('clear')
-            print(str(c))
-        return move
-    
-    def valid_destination(self, lower_case, c):
-        validDestination = False
-        while (validDestination is False):
-            if (lower_case): print("\nlower case:")
-            else: print("\nUPPER CASE:")
-            print("\nDestination:")
-            destination = input()
-            d = move_alg(destination)
-            if(self.valid_input(destination) and not self.same_team(lower_case, d)):
-                validDestination = True
-            os.system('clear')
-            print(str(c))
-        return destination
     
     def rookValidity(self, move, destination):
         # Rooks traveling vertically should always be on square coordinates modulus 8 of original position.
@@ -214,6 +184,12 @@ class Chessboard():
                 else:
                     return False
 
+            if (self.reveal_piece(move).lower() == 'n'): 
+                if validator(self.reveal_piece(move), move, destination, self.current_board(), lower_case):
+                    validPieceMove = True
+                else:
+                    return False
+
             if (self.reveal_piece(move).lower() == 'r'):
                 if (self.rookValidity(move, destination)):
                     validPieceMove = True
@@ -287,39 +263,66 @@ class Chessboard():
         else:
             return False
 
+    def ask_for_input(self, lower_case, output):
+        if (lower_case): 
+            print("\nlower case ", output)
+        else:
+            print("\nUPPER CASE ", output)
 
 def main():
-    ### TODO Spyrja út í 'clear' vs. 'clr'
+    ### TODO 'clear' vs. 'clr'
+    ### TODO Refractor
     ### TODO Test script
-    ### TODO Must uncheck
+    ### TODO Check and checkmate are unstable
     os.system('clear')
     c = Chessboard()
     print(str(c))
-    lower_case = False       # 0: White, lower, 1: Black, UPPER
-    status = 1               # 1: in game, 0: game over
+    lower_case = False     # 0: White, lower, 1: Black, UPPER
+    game = True            # 1: in game, 0: game over
 
-    while (status == 1):    # while game is not won
-        # toggle player
+    while (game):    
+    # while game is on
+    # toggle player
         lower_case = not lower_case
-        while(True):    # while the input is correct
-            # input move and destination and validate
-            # output is the int of square in board (e.g. 0 for 'A1')
-            move = move_alg(c.valid_move(lower_case, c))
-            destination = move_alg(c.valid_destination(lower_case, c))
-            # piece moved if valid
-            piece = c.valid_piece_move(lower_case, move, destination, c.current_board())
-            if (piece):
-                c.move_piece(move, destination)
+
+        validPlay = False
+        while (validPlay == False):        
+        # while the play is not valid
+            m = 0
+
+            validMove = False
+            while (validMove == False):
+            # while piece selected to move is not valid
+                # valid_input checks string to see whether it's on the board (e.g. 'D5' OK, not 'Z9')
+                # same_team checks whether player's selected own team (and thereby not the other's or an empty square)
                 os.system('clear')
                 print(str(c))
-                if(c.check(lower_case, destination)):
-                    print("CHECK!")
-                    if(c.checkmate(lower_case)):
-                        status = 0
-                        break
-                break
-            else:
-                print("Not a valid move.")
+                c.ask_for_input(lower_case, "Move:")
+                move = input()                  # E.g. 'C2'
+                if (c.valid_input(move) and c.same_team(lower_case, move_alg(move))):
+                    m = move_alg(move)          # 50
+                    validMove = True
+                else:
+                    print("Invalid selection")
+
+            validDestination = False
+            while (validDestination == False):
+            # while destination is not valid
+                c.ask_for_input(lower_case, "Destination:")
+                destination = input()         # E.g. 'C4'
+                # Move piece and destination piece can't be the same team
+                # Check if the play is legal
+                if (c.valid_input(destination) and not c.same_team(lower_case, move_alg(destination)) and c.valid_piece_move(lower_case, m, move_alg(destination), c.current_board())):
+                    validDestination = True
+                    d = move_alg(destination)  # 34
+                    c.move_piece(m, d)
+                    validPlay = True
+                    # TODO Check and checkmate
+                else:
+                    print("Invalid move!")
+                    break
+        os.system('clear')
+        print(str(c))
     print("CCCCCCHEEEEEECCCKKKMAAAAAATEEEEEE!!!!!")
 
 main()
