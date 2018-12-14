@@ -55,39 +55,28 @@ class Chessboard():
             return True
         else: 
             return False
-    
-    def rookValidity(self, move, destination):
-        # Rooks traveling vertically should always be on square coordinates modulus 8 of original position.
-        diff = abs(move-destination)
-        # Rooks traveling horizontally should always be between most left and most right squares (inclusive) on line.
-        # vertical finds position from leftside, horizon0 and horizon1 determines interval
-        # TODO don't jump over pieces
-        vertical = move % 8
-        horizon0 = move - vertical
-        horizon1 = horizon0 + 7
-        if (horizon0 <= destination <= horizon1):
-            # if piece's moving horizontally, fill a list of the squares it's traversing, order of squares doesn't matter
-            horizontal_move = []
-            low_bound = 0
-            hi_bound = 63
-            if move < destination: 
-                low_bound = move
-                hi_bound = destination
-            else: 
-                low_bound = destination
-                hi_bound = move
-            for s in range(low_bound+1, hi_bound):      # e.g. from 27 to 32 (both exclusive)
-                horizontal_move.append(self.reveal_piece(s))
-            # check 
-            print(horizontal_move)
-            # check pieces on path, OK if one piece at the end
-            for h in range(0, len(horizontal_move)):
-                if horizontal_move[h] != " ":
-                    print(horizontal_move[h])
-                    return False
-            return True
 
-        elif (diff % 8 == 0):
+    def horizontal_travel(self, move, destination):
+        # if piece's moving horizontally, fill a list of the squares it's traversing, order of squares doesn't matter
+        horizontal_move = []
+        low_bound = 0
+        hi_bound = 63
+        if move < destination: 
+            low_bound = move
+            hi_bound = destination
+        else: 
+            low_bound = destination
+            hi_bound = move
+        for s in range(low_bound+1, hi_bound):      # e.g. from 27 to 32 (both exclusive)
+            horizontal_move.append(self.reveal_piece(s))
+        # check pieces on path, OK if one piece at the end
+        for h in range(0, len(horizontal_move)):
+            if horizontal_move[h] != " ":
+                print(horizontal_move[h])
+                return False
+        return True
+
+    def vertical_travel(self, move, destination):
             vertical_move = []
             low_bound = 0
             hi_bound = 63
@@ -101,13 +90,28 @@ class Chessboard():
             for s in range(low_bound+1, hi_bound):
                 if abs(move - s) % 8 == 0:
                     vertical_move.append(self.reveal_piece(s))
-            # check
-            print(vertical_move)
             # check pieces on path, OK if one piece at the end
             for v in range(0, len(vertical_move)):
                 if vertical_move[v] != " ":
                     return False
             return True
+
+    def rookValidity(self, move, destination):
+        # Rooks traveling vertically should always be on square coordinates modulus 8 of original position.
+        diff = abs(move-destination)
+        # Rooks traveling horizontally should always be between most left and most right squares (inclusive) on line.
+        # vertical finds position from leftside, horizon0 and horizon1 determines interval
+        vertical = move % 8
+        horizon0 = move - vertical
+        horizon1 = horizon0 + 7
+        if (horizon0 <= destination <= horizon1):
+            if self.horizontal_travel(move, destination):
+                return True
+            else:
+                return False
+        elif (diff % 8 == 0):
+            if self.vertical_travel(move, destination):
+                return True
         else:
             return False
 
@@ -169,8 +173,13 @@ class Chessboard():
             return False
 
     def kingValidity(self, move, destination):
-        diff = abs(move-destination)
-        if diff == 1 or 7 <= diff <= 9:
+        diff = destination-move
+        # going off left side
+        if (move % 8 == 0) and (diff == -1):
+            return False
+        elif ((move+1) % 8 == 0) and (diff == 1):
+            return False
+        elif abs(diff) == 1 or 7 <= abs(diff) <= 9:
             return True
         else:
             return False
