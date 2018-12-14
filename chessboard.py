@@ -115,54 +115,41 @@ class Chessboard():
         else:
             return False
 
+    def diagonal_travel(self, move, destination, degree):
+            diagonal_move = []
+            low_bound = 0
+            hi_bound = 63
+            if move < destination: 
+                low_bound = move
+                hi_bound = destination
+            else: 
+                low_bound = destination
+                hi_bound = move
+            # For diagonal movement we create a list of squares to check but we only add every seventh square
+            for s in range(low_bound+1, hi_bound):
+                if abs(move - s) % degree == 0:
+                    diagonal_move.append(self.reveal_piece(s))
+            # check pieces on path, OK if one piece at the end
+            for d in range(0, len(diagonal_move)):
+                if diagonal_move[d] != " ":
+                    return False
+            # if none found:
+            return True
+
     def bishopValidity(self, move, destination):
         diff = abs(move-destination)
         # some cool discrete mathematics, ala Halldór Halldórsson, reveals that diagonal movements 
         # should always either have a length of 7s (/) or 9s (\)
         if (diff % 7 == 0):
-            # check squares in between
-            diagonal_move = []
-            low_bound = 0
-            hi_bound = 63
-            if move < destination: 
-                low_bound = move
-                hi_bound = destination
-            else: 
-                low_bound = destination
-                hi_bound = move
-            # For diagonal movement we create a list of squares to check but we only add every seventh square
-            for s in range(low_bound+1, hi_bound):
-                if abs(move - s) % 7 == 0:
-                    diagonal_move.append(self.reveal_piece(s))
-            # check
-            print(diagonal_move)
-            # check pieces on path, OK if one piece at the end
-            for d in range(0, len(diagonal_move)):
-                if diagonal_move[d] != " ":
-                    return False
-            return True
+            if self.diagonal_travel(move, destination, 7):
+                return True
+            else:
+                return False
         elif (diff % 9 == 0):
-            # check squares in between
-            diagonal_move = []
-            low_bound = 0
-            hi_bound = 63
-            if move < destination: 
-                low_bound = move
-                hi_bound = destination
-            else: 
-                low_bound = destination
-                hi_bound = move
-            # For diagonal movement we create a list of squares to check but we only add every seventh square
-            for s in range(low_bound+1, hi_bound):
-                if abs(move - s) % 9 == 0:
-                    diagonal_move.append(self.reveal_piece(s))
-            # check
-            print(diagonal_move)
-            # check pieces on path, OK if one piece at the end
-            for d in range(0, len(diagonal_move)):
-                if diagonal_move[d] != " ":
-                    return False
-            return True
+            if self.diagonal_travel(move, destination, 9):
+                return True
+            else:
+                return False
         else:
             return False
 
