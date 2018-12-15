@@ -96,9 +96,97 @@ def test_move_pieces():
     # implemented in test_current_board()
     return test_current_board()
 
-print("Testing create_board():  ", test_create_board())
-print("Testing current_board(): ",test_current_board())
-print("Testing reveal_piece():  ", test_reveal_piece())
-print("Testing valid_input():   ", test_valid_input())
-print("Testing same_team:       ", test_same_team())
-print("Testing move_pieces():   ", test_move_pieces())
+def test_horizontal_travel():
+    # test horizontal travel of pieces, before data is sent to that function
+    # another validates that the movement is in the horizontal line on the board
+    c = Chessboard()
+    c.move_piece(48,32)     # p to A4
+    c.move_piece(15,31)     # P to H5
+    c.move_piece(56,40)     # r to A3
+    c.move_piece(7,23)      # R to H6
+    c.move_piece(51,43)     # p to D3
+    c.move_piece(11,19)     # P to D6
+    '''{ 0:'R',  1:'N',  2:'B',  3:'Q',  4:'K',  5:'B',  6:'N',  7:' ', 
+         8:'P',  9:'P', 10:'P', 11:' ', 12:'P', 13:'P', 14:'P', 15:' ',
+        16:' ', 17:' ', 18:' ', 19:'P', 20:' ', 21:' ', 22:' ', 23:'R',
+        24:' ', 25:' ', 26:' ', 27:' ', 28:' ', 29:' ', 30:' ', 31:'P',
+        32:'p', 33:' ', 34:' ', 35:' ', 36:' ', 37:' ', 38:' ', 39:' ',
+        40:'r', 41:' ', 42:' ', 43:'p', 44:' ', 45:' ', 46:' ', 47:' ',
+        48:' ', 49:'p', 50:'p', 51:' ', 52:'p', 53:'p', 54:'p', 55:'p',
+        56:' ', 57:'n', 58:'b', 59:'q', 60:'k', 61:'b', 62:'n', 63:'r'}'''
+    try:
+        assert c.horizontal_travel(40,41) == True
+        assert c.horizontal_travel(40,42) == True
+        # moving r from 40 to 43 on p would be OK with horizontal_travel because it
+        # only checks whether we've jumped any pieces, other validating functions
+        # make sure we can't kill our own pieces
+        assert c.horizontal_travel(40,44) == False
+        assert c.horizontal_travel(40,24) == False
+        assert c.horizontal_travel(23,39) == False
+        assert c.horizontal_travel(23,18) == False
+        assert c.horizontal_travel(23,20) == True
+        return True
+    except:
+        return False
+
+def test_vertical_travel():
+    c = Chessboard()
+    c.move_piece(48,32)     # p to A4
+    c.move_piece(15,31)     # P to H5
+    c.move_piece(56,40)     # r to A3
+    c.move_piece(7,23)      # R to H6
+    c.move_piece(51,43)     # p to D3
+    c.move_piece(11,19)     # P to D6
+    c.move_piece(40,41)     # r to B3
+    '''{ 0:'R',  1:'N',  2:'B',  3:'Q',  4:'K',  5:'B',  6:'N',  7:' ', 
+         8:'P',  9:'P', 10:'P', 11:' ', 12:'P', 13:'P', 14:'P', 15:' ',
+        16:' ', 17:' ', 18:' ', 19:'P', 20:' ', 21:' ', 22:' ', 23:'R',
+        24:' ', 25:' ', 26:' ', 27:' ', 28:' ', 29:' ', 30:' ', 31:'P',
+        32:'p', 33:' ', 34:' ', 35:' ', 36:' ', 37:' ', 38:' ', 39:' ',
+        40:' ', 41:'r', 42:' ', 43:'p', 44:' ', 45:' ', 46:' ', 47:' ',
+        48:' ', 49:'p', 50:'p', 51:' ', 52:'p', 53:'p', 54:'p', 55:'p',
+        56:' ', 57:'n', 58:'b', 59:'q', 60:'k', 61:'b', 62:'n', 63:'r'}'''
+    try:
+        assert c.vertical_travel(41,33) == True
+        assert c.vertical_travel(41,1) == False
+        assert c.vertical_travel(41,57) == False
+        assert c.vertical_travel(23,39) == False
+        assert c.vertical_travel(23,7) == True
+        return True
+    except:
+        return False
+
+def test_diagonal_travel():
+    # Test diagonal movement, previous functions have validated the movement is only diagonal on the board
+    c = Chessboard()
+    c.move_piece(52,44)     # p to E3
+    c.move_piece(11,19)     # P to D6
+    c.move_piece(61,34)     # b to C4
+    c.move_piece(2,29)      # B to F5
+    '''{ 0:'R',  1:'N',  2:' ',  3:'Q',  4:'K',  5:'B',  6:'N',  7:'R', 
+         8:'P',  9:'P', 10:'P', 11:' ', 12:'P', 13:'P', 14:'P', 15:'P',
+        16:' ', 17:' ', 18:' ', 19:'P', 20:' ', 21:' ', 22:' ', 23:' ',
+        24:' ', 25:' ', 26:' ', 27:' ', 28:' ', 29:'B', 30:' ', 31:' ',
+        32:' ', 33:' ', 34:'b', 35:' ', 36:' ', 37:' ', 38:' ', 39:' ',
+        40:' ', 41:' ', 42:' ', 43:' ', 44:'p', 45:' ', 46:' ', 47:' ',
+        48:'p', 49:'p', 50:'p', 51:'p', 52:' ', 53:'p', 54:'p', 55:'p',
+        56:'r', 57:'n', 58:'b', 59:'q', 60:'k', 61:' ', 62:'n', 63:'r'}'''
+    try:
+        assert c.diagonal_travel(34,16,9) == True     # b to A6
+        assert c.diagonal_travel(34,6,7) == False     # b to G8
+        assert c.diagonal_travel(29,57,7) == False    # B to B2
+        assert c.diagonal_travel(29,46,9) == True     # B to H3
+        return True
+    except:
+        return False
+
+
+# print("Testing create_board():     ", test_create_board())
+# print("Testing current_board():    ",test_current_board())
+# print("Testing reveal_piece():     ", test_reveal_piece())
+# print("Testing valid_input():      ", test_valid_input())
+# print("Testing same_team:          ", test_same_team())
+# print("Testing move_pieces():      ", test_move_pieces())
+# print("Testing horizontal_travel():", test_horizontal_travel())
+print("Testing vertical_travel():  ", test_vertical_travel())
+#print("Testing diagonal_travel():  ", test_diagonal_travel())
