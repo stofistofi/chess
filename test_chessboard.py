@@ -19,6 +19,7 @@ def test_create_board():
 
 def test_current_board():
     # test whether making a few moves changes the board correctly
+    # this also tests move_pieces, which doesn't validate but only adjusts strings
     expected_board = { 0:'R',  1:'N',  2:'B',  3:'Q',  4:'K',  5:'B',  6:'N',  7:'R', 
                          8:'P',  9:'P', 10:' ', 11:'P', 12:' ', 13:'P', 14:'P', 15:'P',
                         16:' ', 17:' ', 18:' ', 19:' ', 20:' ', 21:' ', 22:' ', 23:' ',
@@ -78,13 +79,26 @@ def test_valid_input():
 
 def test_same_team():
     c = Chessboard()
+    lower_case = True
     try:
-        assert c.same_team(lower_case, 'p') == True
+        assert c.same_team(lower_case, 56) == True
+        assert c.same_team(lower_case, 4) == False
+        assert c.same_team(not lower_case, 48) == False 
+        assert c.same_team(lower_case, 1) == False
+        assert c.same_team(not lower_case, 60) == False
+        assert c.same_team(lower_case, 58) == True
         return True
     except:
         return False
 
+def test_move_pieces():
+    # as move_pieces() only adjusts strings, the test has been 
+    # implemented in test_current_board()
+    return test_current_board()
+
 print("Testing create_board():  ", test_create_board())
 print("Testing current_board(): ",test_current_board())
 print("Testing reveal_piece():  ", test_reveal_piece())
-print("Testing test_valid_input:", test_valid_input())
+print("Testing valid_input():   ", test_valid_input())
+print("Testing same_team:       ", test_same_team())
+print("Testing move_pieces():   ", test_move_pieces())
