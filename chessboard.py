@@ -72,7 +72,7 @@ class Chessboard():
         # check pieces on path, OK if one piece at the end
         for h in range(0, len(horizontal_move)):
             if horizontal_move[h] != " ":
-                print(horizontal_move[h])
+                #print(horizontal_move[h])
                 return False
         return True
 
@@ -131,6 +131,8 @@ class Chessboard():
                     diagonal_move.append(self.reveal_piece(s))
             # check pieces on path, OK if one piece at the end
             for d in range(0, len(diagonal_move)):
+                if diagonal_move[d] == 'K' or diagonal_move[d] == 'k':
+                    print("Check!")
                 if diagonal_move[d] != " ":
                     return False
             # if none found:
@@ -168,20 +170,240 @@ class Chessboard():
             return False
         elif abs(diff) == 1 or 7 <= abs(diff) <= 9:
             return True
+        
+        #Castling
+        elif move == 60 and destination == 62 and 'r' == self.reveal_piece(63) and ' ' == self.reveal_piece(62) and ' ' == self.reveal_piece(61):
+            self.__board[63] = ' '
+            self.__board[61] = 'r'
+            print("castliing")
+            return True
+        elif move == 60 and destination == 58 and 'r' == self.reveal_piece(56) and ' ' == self.reveal_piece(59) and ' ' == self.reveal_piece(58) and ' ' == self.reveal_piece(57):
+            self.__board[56] = ' '
+            self.__board[59] = 'r'
+            print("castling")
+            return True
+        
+        elif move == 4 and destination == 6 and 'R' == self.reveal_piece(7) and ' ' == self.reveal_piece(5) and ' ' == self.reveal_piece(6):
+            self.__board[7] = ' '
+            self.__board[5] = 'R'
+            print("castling")
+            return True
+        
+        elif move == 4 and destination == 2 and 'R' == self.reveal_piece(0) and ' ' == self.reveal_piece(1) and ' ' == self.reveal_piece(2) and ' ' == self.reveal_piece(3):
+            self.__board[0] = ' '
+            self.__board[3] = 'R'
+            print("castling")
+            return True
+        else:
+
+            return False
+
+    def pawnValidity(self, name, move, destination, board):
+
+        #if the pawn is in the initial state
+        initialStateLower = [48, 49, 50, 51, 52, 53, 54, 55]
+        initialStateHigher = [8, 9, 10, 11, 12, 13, 14, 15]
+        if name.islower():
+            
+            if 'K' == board[destination - 7] or 'K' == board[destination - 9]:
+                print("lower pawn has checked")
+            #moving on top of pieces from initial state
+            if move in initialStateLower:
+                if move - 8 == destination:
+                    if ' ' == board[destination]:
+                        return True
+                if move - 16 == destination:
+                    if ' ' == board[destination] and ' ' == board[destination + 8]:
+                        return True
+                
+            #killing initl state
+            if ' ' != board[destination] and (move - 6 == destination or move - 9 == destination):
+                return True
+
+            #moving on top of pieces not initial state
+            if move not in initialStateLower:
+                if move - 8 == destination:
+                    if ' ' == board[destination]:
+                        return True
+
+            #Killing a piece (Death by Pawn)
+            if move - 7 == destination or move - 9 == destination:
+                if ' ' != board[destination]:
+                    return True
+            else:
+                return False
+        elif name.isupper():
+
+            if 'k' == board[destination - 7] or 'k' == board[destination - 9]:
+                print("lower pawn has checked")
+            
+            #moving on top of pieces from initial state
+            if move in initialStateHigher:
+                if move + 8 == destination:
+                    if ' ' == board[destination]:
+                        return True
+                if move + 16 == destination:
+                    if ' ' == board[destination] and ' ' == board[destination - 8]:
+                        return True
+                else: return False
+            
+            #moving on top of pieces not initial state
+            if move not in initialStateHigher:
+                if move + 8 == destination:
+                    if ' ' == board[destination]:
+                        return True
+            
+            #Killing a piece (Death by Pawn)
+            if move + 7 == destination or move + 9 == destination:
+                if ' ' != board[destination]:
+                    return True
+            else:
+                return False
+
+    def knightValidity(self, name, move, destination, board):
+        safeZone = [18,19,20,21,26,27,28,29,34,25,26,27,42,43,44,45]
+        outBound1 = [58,59,60,61]
+        outBound1plus2 = [57,58,59,60,61,62]
+        outbound2 = [40,32,24,16]
+        outbound2plus2 = [48,40,32,24,16,8]
+        outbound3 = [2,3,4,5]
+        outbound3plus2 = [1,2,3,4,5,6]
+        outbound4 = [23,31,39,47]
+        outbound4plus2 = [15,23,31,39,47,55]
+        redzone1 = [10,11,12,13]
+        redzone1v1 = [9,10,11,12,13,14]
+        redzone2 = [50,51,52,53]
+        redzone2v2 = [49,50,51,52,53,54]
+        redzone3 = [17,25,33,41,49]
+        redzone4 = [22,30,38,46]
+
+        #shortcuts
+        d = destination
+        forl = move - 17
+        forr = move - 15
+        lef = move - 10
+        led = move + 6
+        dol = move + 15
+        dor = move + 17
+        rif = move - 6
+        rid = move + 10
+
+        #knight checking king?
+        #if 'K' == self.reveal_piece()
+
+        #if the move is from the safe zone
+        if move in safeZone and (lef == d or rif == d or rid == d or led == d or forl == d or forr == d or dor == d or dol == d):
+            return True
+        if move in outBound1plus2:
+            if forl == d or forr == d:
+                return True
+            if move in outBound1:
+                if lef == d or rif == d:
+                    return True
+        
+        #corner cases
+        if move == 56 and (forr == d or rif == d):
+            return True
+        if move == 63 and (forl == d or lef == d):
+            return True
+        if move == 0 and (dor == d or rid == d):
+            return True
+        if move == 7 and (dol == d or led == d):
+            return True
+        if move == 48 and (forr == d):
+            return True
+        if move == 57 and (rif == d):
+            return True
+        if move == 62 and (forr == d):
+            return True
+        if move == 55 and (forl == d):
+            return True
+        if move == 8 and (dor == d):
+            return True
+        if move == 1 and (rid == d):
+            return True
+        if move == 6 and (led == d):
+            return True
+        
+        #redzone corner cases
+        if move == 9 and (rif == d or rid == d):
+            return True
+        if move == 14 and (lef == d or led == d):
+            return True
+        if move == 49 and (rif == d or rid == d):
+            return True
+        if move == 54 and (lef == d or led == d):
+            return True
+        
+        #edge of board cases
+        if move in outbound2plus2:
+            if rid == d or rif == d:
+                return True
+            if move in outbound2:
+                if dor == d or forr == d:
+                    return True
+        if move in outbound3plus2:
+            if dor == d or dol == d:
+                return True
+            if move in outbound3:
+                if led == d or rid == d:
+                    return True
+        if move in outbound4plus2:
+            if lef == d or led == d:
+                return True
+            if move in outbound4:
+                if forl == d or dol == d:
+                    return True
+            
+            #red zone
+            if move in redzone1v1:
+                if dol == d or dor == d:
+                    return True
+                if move in redzone1:
+                    if rid == d or led == d or lef == d or rif == d:
+                        return True
+            
+            if move in redzone2v2:
+                if forl == d or forr == d:
+                    return True
+                if move in redzone2:
+                    if lef == d or led == d or rif == d or rid == d:
+                        return True
+
+            if move in redzone3:
+                if forl == d or forr == d or dol == d or dor == d or rif == d or rid == d:
+                    return True
+
+            if move in redzone4:
+                if forl == d or forr == d or lef == d or led == d or dol == d or dor == d:
+                    return True
         else:
             return False
+
+    def check_check(self, kingdex, boardStatus, turn):
+        if turn == True:
+            for i in range(0,64):
+                if self.pawnValidity('p', i, kingdex, boardStatus):
+                    print("UPPER King checked")
+                    return True
+        if turn == False:
+            for i in range(0,64):
+                if self.pawnValidity('P', i, kingdex, boardStatus):
+                    print("lower king checked")
+                    return True
 
     def valid_piece_move(self, lower_case, move, destination, currBoard):
         validPieceMove = False
         while (validPieceMove is False):
+
             if (self.reveal_piece(move).lower() == 'p'): 
-                if validator(self.reveal_piece(move), move, destination, self.current_board(), lower_case):
+                if (self.pawnValidity(self.reveal_piece(move), move, destination, self.current_board())):
                     validPieceMove = True
                 else:
                     return False
 
             if (self.reveal_piece(move).lower() == 'n'): 
-                if validator(self.reveal_piece(move), move, destination, self.current_board(), lower_case):
+                if (self.knightValidity(self.reveal_piece(move), move, destination, self.current_board())):
                     validPieceMove = True
                 else:
                     return False
@@ -213,51 +435,67 @@ class Chessboard():
         return True
 
     def find_king(self, lower_case):
-        if lower_case: find = 'K'
-        else: find = 'k'
-        for s in range(0, 64):
-            if (self.reveal_piece(s) == find):
-                return s
-
-    def find_kingEscapes(self, lower_case):
-        king = self.find_king(lower_case)
-        kingsEscapes = []
-        if self.valid_piece_move(lower_case, king, king+1, self.current_board()):
-            kingsEscapes.append(king+1)
-        elif self.valid_piece_move(lower_case, king, king-1, self.current_board()):
-            kingsEscapes.append(king-1)
-        for k in range(7,10):
-            if self.valid_piece_move(lower_case, king, king+k, self.current_board()):
-                kingsEscapes.append(king+k)
-        for k in range(-9,-6):
-            if self.valid_piece_move(lower_case, king, king+k, self.current_board()):
-                kingsEscapes.append(king+k)
-        return kingsEscapes
-
-    def check(self, lower_case, move):
-        # after moving a piece we check if the piece has checked the opponent's king
-        # we do this by reusing valid_piece_move but for the piece's new location and the location of the other's king
-        # let's find the king
-        king = self.find_king(lower_case)
-        # let's see if moving from the new location to the king would be a legal move, if so, it's check
-        if (self.valid_piece_move(lower_case, move, king, self.current_board())):
-            return True
+        if lower_case:
+            find = 'K'
+            for i in range(0, 64):
+                if (self.reveal_piece(i) == find):
+                    s = self.reveal_piece(i)
+                    return s
+                else:
+                    s = 100
         else:
-            return False
+            find = 'k'
+            for i in range(0, 64):
+                if (self.reveal_piece(i) == find):
+                    s = self.reveal_piece(i)
+                    return s
+                else:
+                    s = 200
+        return s
 
-    def checkmate(self, lower_case):
-        king = self.find_king(lower_case)
-        kingsEscapes = self.find_kingEscapes(lower_case)
-        if len(kingsEscapes) == 0:
-            return True
-        for k in kingsEscapes:
-            for p in self.current_board():
-                if self.valid_piece_move(lower_case, p, king, self.current_board()):
-                    kingsEscapes = kingsEscapes.remove(k)
-        if len(kingsEscapes) == 0:
-            return True
-        else:
-            return False
+           
+
+    # def find_kingEscapes(self, lower_case):
+    #     king = self.find_king(lower_case)
+    #     kingsEscapes = []
+    #     if self.valid_piece_move(lower_case, king, king+1, self.current_board()):
+    #         kingsEscapes.append(king+1)
+    #     elif self.valid_piece_move(lower_case, king, king-1, self.current_board()):
+    #         kingsEscapes.append(king-1)
+    #     for k in range(7,10):
+    #         if self.valid_piece_move(lower_case, king, king+k, self.current_board()):
+    #             kingsEscapes.append(king+k)
+    #     for k in range(-9,-6):
+    #         if self.valid_piece_move(lower_case, king, king+k, self.current_board()):
+    #             kingsEscapes.append(king+k)
+    #     return kingsEscapes
+
+    # def check(self, lower_case, move):
+    #     # after moving a piece we check if the piece has checked the opponent's king
+    #     # we do this by reusing valid_piece_move but for the piece's new location and the location of the other's king
+    #     # let's find the king
+    #     print("checking check")
+    #     king = self.find_king(lower_case)
+    #     # let's see if moving from the new location to the king would be a legal move, if so, it's check
+    #     if (self.valid_piece_move(lower_case, move, king, self.current_board())):
+    #         print("Check!!!")
+    #         return True
+    #     else:
+    #         return False
+
+    # def checkmate(self, lower_case):
+    #     king = self.find_king(lower_case)
+    #     kingsEscapes = self.find_kingEscapes(lower_case)
+    #     if len(kingsEscapes) == 0:
+    #         return True
+    #     for k in kingsEscapes:
+    #         for p in self.current_board():
+    #             if self.valid_piece_move(lower_case, p, king, self.current_board()):
+    #                 kingsEscapes = kingsEscapes.remove(k)
+    #     if len(kingsEscapes) == 0:
+    #         return True
+    #     else:
+    #         return False
 
     def ask_for_input(self, lower_case, output):
         if (lower_case): 
@@ -301,6 +539,10 @@ def main():
                 else:
                     print("Invalid selection")
 
+            #if (c.check( lower_case, m)):
+            #    print("check!!")
+
+
             validDestination = False
             while (validDestination == False):
             # while destination is not valid
@@ -308,19 +550,32 @@ def main():
                 destination = input()         # E.g. 'C4'
                 # Move piece and destination piece can't be the same team
                 # Check if the play is legal
+
+                if (c.find_king( lower_case)):
+                    print("Warning: ")
+
                 if (c.valid_input(destination) and not c.same_team(lower_case, move_alg(destination)) and c.valid_piece_move(lower_case, m, move_alg(destination), c.current_board())):
                     validDestination = True
                     d = move_alg(destination)  # 34
                     c.move_piece(m, d)
+
                     validPlay = True
-                    # TODO Check and checkmate
                 else:
                     print("Invalid move!")
                     break
         os.system('clear')
         print(str(c))
-    print("CCCCCCHEEEEEECCCKKKMAAAAAATEEEEEE!!!!!")
 
+        
+        if (c.find_king(lower_case)) == 100:
+            print("king dead - lower Wins!!")
+            game = not game
+            break
+        elif (c.find_king(lower_case)) == 200:
+            print("king dead - UPPER Wins!!")
+            game = not game
+            break
+    print("game ended")
 main()
 
 # this is the newest version
