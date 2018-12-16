@@ -1,6 +1,6 @@
 import os
 from move_alg import move_alg
-from chess_pieces import validator
+
 
 class Chessboard():
 

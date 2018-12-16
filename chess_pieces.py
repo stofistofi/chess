@@ -2,64 +2,92 @@
 #To Do List
 # can kill forward???
 #lower case pawns
-def lowerPawnValidity(name, fromm, destination, board):
+def lowerPawnValidity(name, move, destination, board):
 
     #if the pawn is in the initial state
     initialStateLower = [48, 49, 50, 51, 52, 53, 54, 55]
-
-        #moving on top of pieces from initial state
-    if fromm in initialStateLower:
-        if fromm - 8 == destination:
-            if ' ' == board[destination]:
-                return True
-        if fromm - 16 == destination:
-            if ' ' == board[destination] and ' ' == board[destination + 8]:
-                return True
-        else: return False
-    
-    #moving on top of pieces not initial state
-    if fromm not in initialStateLower:
-        if fromm - 8 == destination:
-            if ' ' == board[destination]:
-                return True
-    
-    #Killing a piece (Death by Pawn)
-    if fromm - 7 == destination or fromm - 9 == destination:
-        if ' ' != board[destination]:
-            return True
-    else:
-        return False
-
-
-#upper case pawns
-def upperPawnValidity(name, fromm, destination, board):
     initialStateHigher = [8, 9, 10, 11, 12, 13, 14, 15]
-    
-    #moving on top of pieces from initial state
-    if fromm in initialStateHigher:
-        if fromm + 8 == destination:
+    if name.islower():
+        #moving on top of pieces from initial state
+        if move in initialStateLower:
+            if move - 8 == destination:
+                if ' ' == board[destination]:
+                    return True
+            if move - 16 == destination:
+                if ' ' == board[destination] and ' ' == board[destination + 8]:
+                    return True
+            
+        #killing initl state
+        if ' ' != board[destination] and (move - 6 == destination or move - 9 == destination):
+            return True
+
+        #moving on top of pieces not initial state
+        if move not in initialStateLower:
+            if move - 8 == destination:
+                if ' ' == board[destination]:
+                    return True
+
+        #Killing a piece (Death by Pawn)
+        if move - 7 == destination or move - 9 == destination:
+            if ' ' != board[destination]:
+                return True
+        else:
+            return False
+    elif name.isupper():
+        #moving on top of pieces from initial state
+    if move in initialStateHigher:
+        if move + 8 == destination:
             if ' ' == board[destination]:
                 return True
-        if fromm + 16 == destination:
+        if move + 16 == destination:
             if ' ' == board[destination] and ' ' == board[destination - 8]:
                 return True
         else: return False
     
     #moving on top of pieces not initial state
-    if fromm not in initialStateHigher:
-        if fromm + 8 == destination:
+    if move not in initialStateHigher:
+        if move + 8 == destination:
             if ' ' == board[destination]:
                 return True
     
     #Killing a piece (Death by Pawn)
-    if fromm + 7 == destination or fromm + 9 == destination:
+    if move + 7 == destination or move + 9 == destination:
         if ' ' != board[destination]:
             return True
     else:
         return False
 
 
-def knightValidity(name, fromm, destination, board):
+
+# #upper case pawns
+# def upperPawnValidity(name, move, destination, board):
+    
+    
+#     #moving on top of pieces from initial state
+#     if move in initialStateHigher:
+#         if move + 8 == destination:
+#             if ' ' == board[destination]:
+#                 return True
+#         if move + 16 == destination:
+#             if ' ' == board[destination] and ' ' == board[destination - 8]:
+#                 return True
+#         else: return False
+    
+#     #moving on top of pieces not initial state
+#     if move not in initialStateHigher:
+#         if move + 8 == destination:
+#             if ' ' == board[destination]:
+#                 return True
+    
+#     #Killing a piece (Death by Pawn)
+#     if move + 7 == destination or move + 9 == destination:
+#         if ' ' != board[destination]:
+#             return True
+#     else:
+#         return False
+
+
+def knightValidity(name, move, destination, board):
     safeZone = [18,19,20,21,26,27,28,29,34,25,26,27,42,43,44,45]
     outBound1 = [58,59,60,61]
     outBound1plus2 = [57,58,59,60,61,62]
@@ -78,120 +106,134 @@ def knightValidity(name, fromm, destination, board):
 
     #shortcuts
     d = destination
-    forl = fromm - 17
-    forr = fromm - 15
-    lef = fromm - 10
-    led = fromm + 6
-    dol = fromm + 15
-    dor = fromm + 17
-    rif = fromm - 6
-    rid = fromm + 10
+    forl = move - 17
+    forr = move - 15
+    lef = move - 10
+    led = move + 6
+    dol = move + 15
+    dor = move + 17
+    rif = move - 6
+    rid = move + 10
 
 
     #if the move is from the safe zone
-    if fromm in safeZone and (lef == d or rif == d or rid == d or led == d or forl == d or forr == d or dor == d or dol == d):
+    if move in safeZone and (lef == d or rif == d or rid == d or led == d or forl == d or forr == d or dor == d or dol == d):
         return True
-    if fromm in outBound1plus2:
+    if move in outBound1plus2:
         if forl == d or forr == d:
             return True
-        if fromm in outBound1:
+        if move in outBound1:
             if lef == d or rif == d:
                 return True
     #corner cases
-    if fromm == 56 and (forr == d or rif == d):
+    if move == 56 and (forr == d or rif == d):
         return True
-    if fromm == 63 and (forl == d or lef == d):
+    if move == 63 and (forl == d or lef == d):
         return True
-    if fromm == 0 and (dor == d or rid == d):
+    if move == 0 and (dor == d or rid == d):
         return True
-    if fromm == 7 and (dol == d or led == d):
+    if move == 7 and (dol == d or led == d):
         return True
-    if fromm == 48 and (forr == d):
+    if move == 48 and (forr == d):
         return True
-    if fromm == 57 and (rif == d):
+    if move == 57 and (rif == d):
         return True
-    if fromm == 62 and (forr == d):
+    if move == 62 and (forr == d):
         return True
-    if fromm == 55 and (forl == d):
+    if move == 55 and (forl == d):
         return True
-    if fromm == 8 and (dor == d):
+    if move == 8 and (dor == d):
         return True
-    if fromm == 1 and (rid == d):
+    if move == 1 and (rid == d):
         return True
-    if fromm == 6 and (led == d):
+    if move == 6 and (led == d):
         return True
     
     #redzone corner cases
-    if fromm == 9 and (rif == d or rid == d):
+    if move == 9 and (rif == d or rid == d):
         return True
-    if fromm == 14 and (lef == d or led == d):
+    if move == 14 and (lef == d or led == d):
         return True
-    if fromm == 49 and (rif == d or rid == d):
+    if move == 49 and (rif == d or rid == d):
         return True
-    if fromm == 54 and (lef == d or led == d):
+    if move == 54 and (lef == d or led == d):
         return True
     
     #edge of board cases
-    if fromm in outbound2plus2:
+    if move in outbound2plus2:
         if rid == d or rif == d:
             return True
-        if fromm in outbound2:
+        if move in outbound2:
             if dor == d or forr == d:
                 return True
-    if fromm in outbound3plus2:
+    if move in outbound3plus2:
         if dor == d or dol == d:
             return True
-        if fromm in outbound3:
+        if move in outbound3:
             if led == d or rid == d:
                 return True
-    if fromm in outbound4plus2:
+    if move in outbound4plus2:
         if lef == d or led == d:
             return True
-        if fromm in outbound4:
+        if move in outbound4:
             if forl == d or dol == d:
                 return True
         
         #red zone
-        if fromm in redzone1v1:
+        if move in redzone1v1:
             if dol == d or dor == d:
                 return True
-            if fromm in redzone1:
+            if move in redzone1:
                 if rid == d or led == d or lef == d or rif == d:
                     return True
         
-        if fromm in redzone2v2:
+        if move in redzone2v2:
             if forl == d or forr == d:
                 return True
-            if fromm in redzone2:
+            if move in redzone2:
                 if lef == d or led == d or rif == d or rid == d:
                     return True
 
-        if fromm in redzone3:
+        if move in redzone3:
             if forl == d or forr == d or dol == d or dor == d or rif == d or rid == d:
                 return True
 
-        if fromm in redzone4:
+        if move in redzone4:
             if forl == d or forr == d or lef == d or led == d or dol == d or dor == d:
                 return True
     else:
         return False
 
             
-#bridge for knight
+
+
+def check_check(kingdex, boardStatus, turn):
+    if turn == True:
+        for i in range(0,64):
+            if lowerPawnValidity('p', i, kingdex, boardStatus):
+                print("UPPER King checked")
+                return True
+    if turn == False:
+        for i in range(0,64):
+            if lowerPawnValidity('P', i, kingdex, boardStatus):
+                print("lower king checked")
+                return True
 
 ###########################################################
-def validator(name, fromm, destination, boardStatus, turn):
+def validator(name, move, destination, boardStatus, turn):
+
+    #if turn is true then lower is has the turn
     if name == 'p':
         print("pawn being validated")
-        if lowerPawnValidity(name, fromm, destination, boardStatus):
+        if lowerPawnValidity(name, move, destination, boardStatus):
             return True
 
     if name =='P':
-        if upperPawnValidity(name, fromm, destination, boardStatus):
+        if upperPawnValidity(name, move, destination, boardStatus):
             return True
             
     if name == 'n' or name =='N':
-        if knightValidity(name, fromm, destination, boardStatus):
+        if knightValidity(name, move, destination, boardStatus):
             return True
 
 def main():
@@ -211,3 +253,6 @@ def main():
 #King: minimum 1 and maximum 1. unless castling (castling is when the rook and the King swap places.
 # This can only be done if no piece is checking the King or if the move could result in a check)
 
+#check:
+# how to know if there is a check:
+# K in the possible destination
